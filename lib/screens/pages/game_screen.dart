@@ -13,7 +13,10 @@ class GameScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Game'),
+          Text('BlankFill Game'),
+          SizedBox(height: 10),
+          Text('_ _ _ _ _'),
+          SizedBox(height: 10),
           FilledButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(

@@ -5,6 +5,7 @@ import 'package:zone_game_garage/cubits/auth/auth_cubit.dart';
 import 'package:zone_game_garage/cubits/auth/auth_state.dart';
 import 'package:zone_game_garage/helpers/datetime_helpers.dart';
 import 'package:zone_game_garage/models/user.dart';
+import 'package:zone_game_garage/screens/auth/login_screen.dart';
 
 import 'package:zone_game_garage/screens/dashboard_screen.dart';
 
@@ -17,6 +18,8 @@ class ProfileScreen extends StatelessWidget {
       create: (context) => AuthCubit(),
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (newcontext, state) {
+          bool isLogin = state is AuthAuthenticated ? true : false;
+
           return Center(
             child: Container(
               decoration: BoxDecoration(
@@ -29,19 +32,33 @@ class ProfileScreen extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Settings',
-                      style: TextStyle(
-                        fontSize: Theme.of(context)
-                            .textTheme
-                            .headlineSmall!
-                            .fontSize,
+                    if (isLogin) ...[
+                      Text(
+                        'Settings',
+                        style: TextStyle(
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .fontSize,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 10.0),
-                    ProfileBody(authCubit: newcontext.read<AuthCubit>()),
-                    SizedBox(height: 10.0),
-                    LogoutButton(authCubit: newcontext.read<AuthCubit>()),
+                      SizedBox(height: 10.0),
+                      ProfileBody(authCubit: newcontext.read<AuthCubit>()),
+                      SizedBox(height: 10.0),
+                      LogoutButton(authCubit: newcontext.read<AuthCubit>()),
+                    ] else ...[
+                      Text(
+                        'You are not logged in',
+                        style: TextStyle(
+                          fontSize: Theme.of(context)
+                              .textTheme
+                              .headlineSmall!
+                              .fontSize,
+                        ),
+                      ),
+                      SizedBox(height: 10.0),
+                      LoginButton(),
+                    ],
                   ],
                 ),
               ),
@@ -141,6 +158,26 @@ class LogoutButton extends StatelessWidget {
       },
       style: ButtonStyle(backgroundColor: WidgetStatePropertyAll(Colors.red)),
       child: Text('Logout', style: TextStyle(color: Colors.white)),
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FilledButton(
+      onPressed: () {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DashboardScreen(screen: LoginScreen()),
+          ),
+          (Route<dynamic> route) => false,
+        );
+      },
+      child: Text('Login'),
     );
   }
 }

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:zone_game_garage/screens/dashboard_screen.dart';
-import 'package:zone_game_garage/screens/auth/login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});
@@ -12,21 +10,7 @@ class HomeScreen extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('Home'),
-          FilledButton(
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => DashboardScreen(screen: LoginScreen()),
-                ),
-                (Route<dynamic> route) => false,
-              );
-            },
-            child: Text('Login'),
-          ),
-        ],
+        children: [Text('Home Page')],
       ),
     );
   }
