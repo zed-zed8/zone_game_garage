@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:zone_game_garage/screens/pages/home_screen.dart';
 import 'package:zone_game_garage/screens/pages/game_screen.dart';
+import 'package:zone_game_garage/screens/pages/profile_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, this._screen});
@@ -22,13 +23,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   void initState() {
     super.initState();
-    _pages = [
-      HomeScreen(),
-      GameScreen(),
-      HomeScreen(),
-      // GameScreen(),
-      // ProfileScreen(),
-    ];
+    _pages = [HomeScreen(), GameScreen(), ProfileScreen()];
 
     _overlayScreen = widget._screen;
   }

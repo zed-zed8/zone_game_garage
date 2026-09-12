@@ -2,11 +2,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zone_game_garage/cubits/auth/auth_state.dart';
 import 'package:zone_game_garage/models/user.dart';
 import 'package:zone_game_garage/repositories/auth_repository.dart';
+import 'package:zone_game_garage/services/databases/app_database.dart';
+import 'package:zone_game_garage/services/databases/user_database.dart';
 
 class AuthCubit extends Cubit<AuthState> {
-  final AuthRepository repository;
+  final AuthRepository repository = AuthRepository(
+    UserDatabase(AppDatabase.instance),
+  );
 
-  AuthCubit(this.repository) : super(AuthInitial());
+  AuthCubit() : super(AuthInitial());
 
   Future<void> register(String username, String email, String password) async {
     emit(AuthLoading());
@@ -42,5 +46,38 @@ class AuthCubit extends Cubit<AuthState> {
     } else {
       emit(AuthUnauthenticated());
     }
+  }
+
+  Future<void> logout() async {
+    emit(AuthLoading());
+    emit(AuthLogout());
+
+    try {
+      await repository.logout();
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+  }
+
+  Future<User?> getUser() async {
+    emit(AuthLoading());
+
+    try {
+      return await repository.getCurrentUser();
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+    return null;
+  }
+
+  Future<String?> getUsername() async {
+    emit(AuthLoading());
+
+    try {
+      return await repository.getUsername();
+    } catch (e) {
+      emit(AuthError(e.toString()));
+    }
+    return null;
   }
 }

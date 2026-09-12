@@ -28,12 +28,23 @@ class User {
   factory User.fromMap(Map<String, Object?> map) {
     return User(
       userId: map['user_id'] as int? ?? 0, // Safe fallback default
-      username: map['name'] as String? ?? 'Guest', // Safe fallback default
+      username: map['username'] as String? ?? 'Guest', // Safe fallback default
       email: map['email'] as String?, // Kept as nullable
       password: map['password'] as String?, // Kept as nullable
       createdAt: DateTime.parse(
         map['created_at'].toString(),
       ) as DateTime?, // Kept as nullable
     );
+  }
+
+  /// constructor to handle conversion to a Map
+  Map<String, Object?> map() {
+    return {
+      'user_id': userId,
+      'username': username,
+      'email': email,
+      'password': password,
+      'created_at': createdAt,
+    };
   }
 }

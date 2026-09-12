@@ -50,11 +50,19 @@ class AuthRepository {
     return users.first;
   }
 
+  /// login user
+  ///
+  /// returns User
+  Future<void> logout() async {
+    await AuthStorage.sessionLogout();
+  }
+
+  /// get current user
   Future<User?> getCurrentUser() async {
     if (await AuthStorage.isLoggedIn()) {
       final users = await _userDatabase.query(
         where: 'username = ?',
-        whereArgs: [AuthStorage.getUsername()],
+        whereArgs: [await AuthStorage.getUsername()],
         limit: 1,
       );
 
@@ -62,5 +70,10 @@ class AuthRepository {
     } else {
       return null;
     }
+  }
+
+  // get username
+  Future<String> getUsername() async {
+    return await AuthStorage.getUsername();
   }
 }
