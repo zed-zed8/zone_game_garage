@@ -21,7 +21,7 @@ class User {
       'username': username,
       'email': email,
       'password': password,
-      'created_at': createdAt?.toIso8601String(),
+      'created_at': createdAt!.toIso8601String(),
     };
   }
 
