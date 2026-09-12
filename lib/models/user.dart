@@ -12,7 +12,6 @@ class User {
     required this.password,
     this.createdAt,
   }) {
-    userId ??= 0;
     createdAt ??= DateTime.now();
   }
 
@@ -21,7 +20,7 @@ class User {
       'username': username,
       'email': email,
       'password': password,
-      'created_at': createdAt!.toIso8601String(),
+      'created_at': createdAt?.toIso8601String(),
     };
   }
 

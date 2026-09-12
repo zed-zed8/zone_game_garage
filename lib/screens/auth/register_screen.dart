@@ -10,24 +10,26 @@ import 'package:zone_game_garage/repositories/auth_repository.dart';
 import 'package:zone_game_garage/services/databases/app_database.dart';
 import 'package:zone_game_garage/services/databases/user_database.dart';
 
+import 'package:zone_game_garage/helpers/auth_helpers.dart';
 import 'package:zone_game_garage/screens/dashboard_screen.dart';
-import 'package:zone_game_garage/screens/register_screen.dart';
+import 'package:zone_game_garage/screens/auth/login_screen.dart';
 
 import 'package:zone_game_garage/widgets/link_text.dart';
 import 'package:zone_game_garage/widgets/form_input.dart';
 import 'package:zone_game_garage/widgets/form_input_password.dart';
 
-class LoginScreen extends StatefulWidget {
-  LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   final _formGlobalKey = GlobalKey<FormState>();
 
   String _username = '';
+  String _email = '';
   String _password = '';
 
   @override
@@ -54,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                        'Login',
+                        'Register',
                         style: Theme.of(context).textTheme.headlineLarge,
                       ),
                     ),
@@ -72,6 +74,26 @@ class _LoginScreenState extends State<LoginScreen> {
                         },
                         onSaved: (value) {
                           _username = value!;
+                        },
+                      ),
+                    ),
+
+                    // email
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: FormInput(
+                        label: 'Email',
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Email Address can\'t be empty';
+                          }
+                          if (!AuthHelpers.isValidEmail(value)) {
+                            return 'Invalid Email';
+                          }
+                          return null;
+                        },
+                        onSaved: (value) {
+                          _email = value!;
                         },
                       ),
                     ),
@@ -105,15 +127,15 @@ class _LoginScreenState extends State<LoginScreen> {
                           if (_formGlobalKey.currentState!.validate()) {
                             _formGlobalKey.currentState!.save();
 
-                            log('login!!');
+                            log('register!!');
                             log(_username);
+                            log(_email);
                             log(_password);
 
-                            // TODO: add login logic
-
                             // register using cubit
-                            newcontext.read<AuthCubit>().login(
+                            newcontext.read<AuthCubit>().register(
                               _username,
+                              _email,
                               _password,
                             );
 
@@ -134,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             borderRadius: BorderRadius.circular(19),
                           ),
                         ),
-                        child: const Text('Login'),
+                        child: const Text('Register'),
                       ),
                     ),
 
@@ -144,9 +166,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: Container(
                         alignment: Alignment.topRight,
                         child: LinkText(
-                          text: 'No account? ',
-                          linkText: 'Register Now!',
-                          linkWidget: DashboardScreen(screen: RegisterScreen()),
+                          text: 'Already have an account? ',
+                          linkText: 'Login Now!',
+                          linkWidget: DashboardScreen(screen: LoginScreen()),
                         ),
                       ),
                     ),

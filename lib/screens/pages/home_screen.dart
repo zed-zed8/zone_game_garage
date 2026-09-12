@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zone_game_garage/screens/dashboard_screen.dart';
-import 'package:zone_game_garage/screens/login_screen.dart';
+import 'package:zone_game_garage/screens/auth/login_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({super.key});

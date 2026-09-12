@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:zone_game_garage/screens/home_screen.dart';
+import 'package:zone_game_garage/screens/pages/home_screen.dart';
+import 'package:zone_game_garage/screens/pages/game_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key, this._screen});
@@ -23,7 +24,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     super.initState();
     _pages = [
       HomeScreen(),
-      HomeScreen(),
+      GameScreen(),
       HomeScreen(),
       // GameScreen(),
       // ProfileScreen(),
@@ -41,7 +42,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: Center(
           child: Text(
-            'VoTra',
+            'Zone Game Garage',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.secondary,
