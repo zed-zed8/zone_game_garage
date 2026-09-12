@@ -47,15 +47,17 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
         builder: (context, state) {
           return Center(
             child: Container(
-              width: 500,
+              width: 600,
               child: Form(
                 key: _formGlobalKey,
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     // word
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: Row(
+                      child: Wrap(
                         spacing: 5.0,
                         children: [
                           for (final letter in state.word)
@@ -81,11 +83,11 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
                               BlankFillGuess(_words.join('').toLowerCase()),
                             );
 
-                            _words = [];
                             _formGlobalKey.currentState!.reset();
                           }
+                          _words = [];
                         },
-                        child: Text('Butt'),
+                        child: Text('Submit'),
                       ),
                     ),
                   ],
@@ -99,88 +101,115 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
   }
 }
 
-class Tile extends StatelessWidget {
+class Tile extends StatefulWidget {
   const Tile(this.letter, {super.key, required this.onSaved});
 
   final String letter;
   final Function(String?)? onSaved;
 
   @override
+  State<Tile> createState() => _TileState();
+}
+
+class _TileState extends State<Tile> {
+  late TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize the controller once when the widget enters the tree
+    _controller = TextEditingController(
+      text: widget.letter != '-' ? widget.letter.toUpperCase() : '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose(); // Always dispose controllers to prevent memory leaks
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: TextFormField(
-          textAlign: TextAlign.center,
-          textAlignVertical: TextAlignVertical.center,
-          // 2. Remove the default Flutter styling
-          decoration: InputDecoration(
-            border: InputBorder
-                .none, // Removes the default underline/outline border
-            disabledBorder: InputBorder.none, // Removes the disabled border
-            hintText: '',
-            hintStyle: TextStyle(color: Colors.grey),
+    _controller = TextEditingController(
+      text: widget.letter != '-' ? widget.letter.toUpperCase() : '',
+    );
 
-            // 1. AKTIFKAN & ATUR WARNA BACKGROUND
-            filled: true,
-            fillColor: Color.lerp(Colors.grey[100], Colors.amberAccent, 0.3),
+    // 1. Dapatkan tinggi layar HP saat ini
+    final double screenHeight = MediaQuery.of(context).size.height;
+    // final double screenWidth = MediaQuery.of(context).size.width;
 
-            // 👈 TAMBAHKAN PADDING DI SINI
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 20.0, // Jarak kiri dan kanan teks
-              vertical:
-                  30.0, // Jarak atas dan bawah teks (mengatur tinggi input)
-            ),
+    // 2. Hitung padding vertikal responsif (contoh: 2% dari tinggi layar)
+    // Berikan batas minimal (clamp) agar tidak terlalu tipis di HP jadul
+    final double responsivePadding = (screenHeight * 0.02).clamp(12.0, 20.0);
 
-            // Border Normal & Fokus (Oranye Tebal)
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Colors.orangeAccent,
-                width: 5,
-              ),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Colors.orangeAccent,
-                width: 5,
-              ),
-            ),
+    // 3. Hitung ukuran font responsif (contoh: 1.8% dari tinggi layar)
+    // final double responsiveFontSize = (screenHeight * 0.018).clamp(14.0, 18.0);
 
-            // Border otomatis berubah Merah saat Validasi Error
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red, width: 5),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Colors.red, width: 5),
-            ),
+    return SizedBox(
+      width: 100,
+      height: 100,
+      child: TextFormField(
+        textAlign: TextAlign.center,
+        textAlignVertical: TextAlignVertical.center,
+        // 2. Remove the default Flutter styling
+        decoration: InputDecoration(
+          border:
+              InputBorder.none, // Removes the default underline/outline border
+          disabledBorder: InputBorder.none, // Removes the disabled border
+          hintText: '',
+          hintStyle: TextStyle(color: Colors.grey),
 
-            // Gaya teks error di bawah kotak
-            errorStyle: const TextStyle(fontSize: 12, color: Colors.red),
+          // 1. AKTIFKAN & ATUR WARNA BACKGROUND
+          filled: true,
+          fillColor: Color.lerp(Colors.grey[100], Colors.amberAccent, 0.3),
+
+          // 👈 TAMBAHKAN PADDING DI SINI
+
+          // 4. Pasang padding responsif
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 20.0,
+            vertical:
+                responsivePadding, // 👈 Tinggi input akan menyesuaikan layar HP
           ),
-          // 3. Style the actual input text
-          style: const TextStyle(
-            fontSize: 32,
-            color: Colors.black,
-            fontWeight: FontWeight.w500,
+
+          // Border Normal & Fokus (Oranye Tebal)
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.orangeAccent, width: 5),
           ),
-          maxLength: 1,
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'cannot be empty';
-            }
-            return null;
-          },
-          inputFormatters: [UpperCaseTextFormatter()],
-          onSaved: onSaved,
-          controller: TextEditingController(
-            text: letter == '-' ? '' : letter.toUpperCase(),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.orangeAccent, width: 5),
           ),
-          enabled: letter == '-',
-          textInputAction: TextInputAction.next,
+
+          // Border otomatis berubah Merah saat Validasi Error
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.red, width: 5),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Colors.red, width: 5),
+          ),
+
+          // Gaya teks error di bawah kotak
+          errorStyle: const TextStyle(fontSize: 12, color: Colors.red),
         ),
+        // 3. Style the actual input text
+        style: TextStyle(color: Colors.black),
+        maxLength: 1,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Empty';
+          }
+          return null;
+        },
+        inputFormatters: [UpperCaseTextFormatter()],
+        onSaved: widget.onSaved,
+        controller: _controller,
+        enabled: widget.letter == '-',
+        textInputAction: TextInputAction.next,
       ),
     );
   }

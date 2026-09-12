@@ -32,8 +32,8 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
 
   /// Returns the starting hidden word for a new round.
   String _createHiddenWord() {
-    // use an API for random words
-    String randomWord = 'brain';
+    // TODO use an API for random words
+    String randomWord = 'pragmatic';
 
     return randomWord;
   }
