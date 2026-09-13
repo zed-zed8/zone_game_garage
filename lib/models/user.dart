@@ -37,7 +37,7 @@ class User {
     );
   }
 
-  /// constructor to handle conversion to a Map
+  /// method to handle conversion to a Map
   Map<String, Object?> map() {
     return {
       'user_id': userId,

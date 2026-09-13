@@ -8,9 +8,27 @@ import 'package:zone_game_garage/models/user.dart';
 import 'package:zone_game_garage/screens/auth/login_screen.dart';
 
 import 'package:zone_game_garage/screens/dashboard_screen.dart';
+import 'package:zone_game_garage/services/shared_preferences/auth_storage.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late final bool isLogin;
+
+  @override
+  void initState() {
+    super.initState();
+    log_in();
+  }
+
+  Future<void> log_in() async {
+    isLogin = await AuthStorage.isLoggedIn();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +36,6 @@ class ProfileScreen extends StatelessWidget {
       create: (context) => AuthCubit(),
       child: BlocBuilder<AuthCubit, AuthState>(
         builder: (newcontext, state) {
-          bool isLogin = state is AuthAuthenticated ? true : false;
-
           return Center(
             child: Container(
               decoration: BoxDecoration(

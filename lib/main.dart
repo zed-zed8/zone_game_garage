@@ -7,7 +7,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await AppDatabase.instance.database;
-  BlankFillRepository.gameExistenceCheck;
+  await BlankFillRepository.gameExistenceCheck();
 
   runApp(const MainApp());
 }

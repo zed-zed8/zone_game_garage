@@ -48,6 +48,7 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
           if (state.gameState == GameState.running) {
             log('running app: ');
             inspect(state);
+            print(state.hiddenWord);
             return Center(
               child: SizedBox(
                 width: 600,

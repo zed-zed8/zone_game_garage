@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:http/http.dart' as http;
 
 enum EndPoints {
@@ -55,12 +57,17 @@ class RandomWordApi {
     if (diff != null) queryParameters['diff'] = diff.toString();
 
     final uri = Uri.https(baseUrl, EndPoints.word.endPoint, queryParameters);
+    print(uri);
 
     // WRAP ONLY THIS SECTION IN A TRY/CATCH SAFETY NET
     try {
       final response = await http.get(uri).timeout(const Duration(seconds: 10));
 
       return response.body;
+    } on SocketException catch (e) {
+      // This catches the exact "Failed host lookup" error you saw
+      print("Network/DNS Error (Device might be offline or blocked): $e");
+      return '["garage"]';
     } on http.ClientException catch (e) {
       print("Flutter HTTP Client Error Hooked: $e");
       return '["garage"]';

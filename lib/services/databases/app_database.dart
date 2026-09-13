@@ -76,5 +76,22 @@ class AppDatabase {
         FOREIGN KEY(game_id) REFERENCES games(game_id)
       );
       ''');
+
+    _seedDB(db, version);
+  }
+
+  Future _seedDB(Database db, int version) async {
+    db.insert('users', {
+      'username': 'guest',
+      'email': 'guest@gmail.com',
+      'password': 'cGFzc3dvcmQ=',
+      'created_at': '2009-10-08',
+    });
+
+    db.insert('games', {
+      'game_name': 'spacewar',
+      'description': 'placeholder game',
+      'version': '0.0.0',
+    });
   }
 }

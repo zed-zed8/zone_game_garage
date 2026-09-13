@@ -4,28 +4,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:zone_game_garage/blocs/games/blank_fill/blank_fill_event.dart';
 import 'package:zone_game_garage/blocs/games/blank_fill/blank_fill_state.dart';
+import 'package:zone_game_garage/models/games/blank_fill.dart';
 
 import 'package:zone_game_garage/repositories/games/blank_fill_repository.dart';
 import 'package:zone_game_garage/services/databases/app_database.dart';
-import 'package:zone_game_garage/services/databases/game_database.dart';
 
 class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   // option :
   int? timer; // TODO implements timer
   int? revealedLetterAmount; // TODO implements Letter amount
-  int? lenght; // TODO implements lenght
+  int? length; // TODO implements length
   int? difficulty;
 
   // repository
-  BlankFillRepository _repository = BlankFillRepository(
-    GameDatabase(AppDatabase.instance),
-  );
+  BlankFillRepository _repository = BlankFillRepository(AppDatabase.instance);
 
   BlankFillBloc({
     this.timer,
     this.revealedLetterAmount,
-    this.lenght,
-    this.difficulty,
+    this.length = 5,
+    this.difficulty = 1,
   }) : super(
          const BlankFillState(
            hiddenWord: '',
@@ -40,8 +38,11 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
 
   /// Returns the starting hidden word for a new round.
   Future<String> _createHiddenWord() async {
-    // TODO use an API for random words
-    String randomWord = await _repository.randomWord();
+    // use an API for random words
+    String randomWord = await _repository.randomWord(
+      length: length,
+      diff: difficulty,
+    );
 
     return randomWord;
   }
@@ -67,7 +68,7 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   void _onInitial(BlankFillInitial event, Emitter<BlankFillState> emit) async {
     emit(state.copyWith(gameState: GameState.loading));
     String hiddenWord = await _createHiddenWord();
-    print('hidden word get');
+    log('hidden word get');
     List<String> word = _wordHide(hiddenWord);
     emit(
       BlankFillState(
@@ -119,6 +120,19 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
       log('WIN');
       // handle win
       emit(state.copyWith(gameState: GameState.win));
+      _repository.save(
+        gameName: BlankFill.specification().gameName,
+        blankFill: BlankFill(
+          hiddenWord: hiddenWord,
+          guesses: guesses,
+          gameResult: state.gameState.toString(),
+          playedAt: DateTime.now(),
+          // timer: timer, // TODO implements timer
+          // revealedLetterAmount: revealedLetterAmount, // TODO implements Letter amount
+          length: length,
+          difficulty: difficulty,
+        ),
+      );
     }
     inspect(state);
   }

@@ -38,4 +38,38 @@ class GameDatabase {
       whereArgs: [game.gameId],
     );
   }
+
+  /// get game_name based on game_id
+  Future<String> getGameName(int gameId) async {
+    Database userDB = await _appDatabase.database;
+    final List<Map<String, dynamic>> games = await userDB.query(
+      'games', // Your table name
+      columns: ['game_name'], // Only fetch the column you need
+      where: 'game_id = ?', // Use '?' placeholder for safety
+      whereArgs: [gameId], // Pass the ID to fill the placeholder
+      limit: 1, // Optimize by stopping after 1 match
+    );
+
+    if (games.isNotEmpty) {
+      return games.first['game_name'];
+    }
+    return 'game not found';
+  }
+
+  /// get game_id based on game_name
+  Future<int> getGameId(String gameName) async {
+    Database userDB = await _appDatabase.database;
+    final List<Map<String, dynamic>> games = await userDB.query(
+      'games', // Your table name
+      columns: ['game_id'], // Only fetch the column you need
+      where: 'game_name = ?', // Use '?' placeholder for safety
+      whereArgs: [gameName], // Pass the ID to fill the placeholder
+      limit: 1, // Optimize by stopping after 1 match
+    );
+
+    if (games.isNotEmpty) {
+      return games.first['game_id'];
+    }
+    return 0;
+  }
 }

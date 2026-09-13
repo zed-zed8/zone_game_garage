@@ -17,7 +17,7 @@ class AuthStorage {
   /// get username
   static Future<String> getUsername() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('username') ?? '';
+    return prefs.getString('username') ?? 'guest';
   }
 
   /// set session flag false, and remove the username
