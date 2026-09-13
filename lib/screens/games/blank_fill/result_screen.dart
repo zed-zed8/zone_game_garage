@@ -6,7 +6,10 @@ class ResultScreen extends StatelessWidget {
   /// 'win' or 'lose'
   final String gameResult;
 
-  ResultScreen({super.key, required this.gameResult});
+  /// state.hiddenWord
+  final String hiddenWord;
+
+  ResultScreen({super.key, required this.gameResult, required this.hiddenWord});
   bool get isWin => gameResult == 'win' ? true : false;
 
   TextStyle _textStyle(bool isWin) {
@@ -28,6 +31,16 @@ class ResultScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(
+                  'The Hidden Word Is $hiddenWord',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ),
+
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Center(

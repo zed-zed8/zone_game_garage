@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -31,70 +33,74 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (_) => BlankFillBloc()..add(BlankFillInitial()),
-      child: BlocConsumer<BlankFillBloc, BlankFillState>(
-        listener: (context, state) {
+      child: BlocBuilder<BlankFillBloc, BlankFillState>(
+        builder: (context, state) {
+          if (state.gameState == GameState.loading) {
+            log('before state');
+            inspect(state);
+            return const Center(child: CircularProgressIndicator());
+          }
           if (state.gameState == GameState.win) {
-            Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute<void>(
-                builder: (context) =>
-                    GamingScreen(gameScreen: ResultScreen(gameResult: 'win')),
-              ),
-              (Route<dynamic> route) => false,
+            return ResultScreen(
+              gameResult: 'win',
+              hiddenWord: state.hiddenWord,
             );
           }
-        },
-        builder: (context, state) {
-          return Center(
-            child: Container(
-              width: 600,
-              child: Form(
-                key: _formGlobalKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // word
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Wrap(
-                        spacing: 5.0,
-                        children: [
-                          for (final letter in state.word)
-                            Tile(
-                              letter,
-                              onSaved: (value) {
-                                _words.add(value!);
-                              },
-                            ),
-                        ],
+          if (state.gameState == GameState.running) {
+            log('running app: ');
+            inspect(state);
+            return Center(
+              child: SizedBox(
+                width: 600,
+                child: Form(
+                  key: _formGlobalKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // word
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Wrap(
+                          spacing: 5.0,
+                          children: [
+                            for (final letter in state.word)
+                              Tile(
+                                letter,
+                                onSaved: (value) {
+                                  _words.add(value!);
+                                },
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
 
-                    // submit button
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: FilledButton(
-                        onPressed: () {
-                          if (_formGlobalKey.currentState!.validate()) {
-                            _formGlobalKey.currentState!.save();
+                      // submit button
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FilledButton(
+                          onPressed: () {
+                            if (_formGlobalKey.currentState!.validate()) {
+                              _formGlobalKey.currentState!.save();
 
-                            context.read<BlankFillBloc>().add(
-                              BlankFillGuess(_words.join('').toLowerCase()),
-                            );
+                              context.read<BlankFillBloc>().add(
+                                BlankFillGuess(_words.join('').toLowerCase()),
+                              );
 
-                            _formGlobalKey.currentState!.reset();
-                          }
-                          _words = [];
-                        },
-                        child: Text('Submit'),
+                              _formGlobalKey.currentState!.reset();
+                            }
+                            _words = [];
+                          },
+                          child: Text('Submit'),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
+            );
+          }
+          return Text('nothing');
         },
       ),
     );

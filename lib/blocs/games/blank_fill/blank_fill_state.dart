@@ -1,4 +1,4 @@
-enum GameState { running, win, lose }
+enum GameState { running, win, lose, loading }
 
 class BlankFillState {
   final String hiddenWord;

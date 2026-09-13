@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:zone_game_garage/models/game.dart';
+import 'package:zone_game_garage/services/api/random_word_api.dart';
 import 'package:zone_game_garage/services/databases/app_database.dart';
 import 'package:zone_game_garage/services/databases/game_database.dart';
 
@@ -19,7 +22,22 @@ class BlankFillRepository {
     Iterable<Game> gameExist = await GameDatabase(AppDatabase.instance)
         .query(where: 'game_name = ?', whereArgs: [game.gameName]);
     if (gameExist.isEmpty) {
-      GameDatabase(AppDatabase.instance).insert(game);
+      await GameDatabase(AppDatabase.instance).insert(game);
     }
+  }
+
+  /// get a random word
+  Future<String> randomWord({int? length, String? lang, int? diff}) async {
+    String jsonString = await RandomWordApi.randomWord(
+      number: 1,
+      length: length,
+      lang: lang,
+      diff: diff,
+    );
+
+    final decoded = jsonDecode(jsonString);
+    List<dynamic> list = List<String>.from(decoded);
+
+    return list.first;
   }
 }
