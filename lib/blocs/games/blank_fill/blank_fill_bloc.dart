@@ -1,4 +1,5 @@
-import 'dart:developer';
+import 'dart:developer' as developer;
+import 'dart:math' as math;
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,11 +14,13 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   // option :
   int? timer; // TODO implements timer
   int? revealedLetterAmount; // TODO implements Letter amount
-  int? length; // TODO implements length
+  int? length;
   int? difficulty;
 
   // repository
-  BlankFillRepository _repository = BlankFillRepository(AppDatabase.instance);
+  final BlankFillRepository _repository = BlankFillRepository(
+    AppDatabase.instance,
+  );
 
   BlankFillBloc({
     this.timer,
@@ -51,16 +54,32 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   List<String> _wordHide(String hiddenWord) {
     List<String> letters = hiddenWord.split('');
 
-    // while (!letters.contains('-')) {
+    int? revealedLetter = revealedLetterAmount;
+    int hiddenNumber; // amount of hidden letter
+    if (revealedLetter == null) {
+      hiddenNumber = math.Random().nextInt(letters.length);
+      if (hiddenNumber == 0) {
+        hiddenNumber++;
+      }
+      revealedLetter = letters.length - hiddenNumber;
+    } else {
+      hiddenNumber = letters.length - revealedLetter;
+    }
+
     for (var i = 0; i < letters.length; i++) {
-      // if (Random().nextInt(9) > 1) {
-      //   letters[i] = '-';
-      // }
-      if (i % 2 == 0) {
+      if (hiddenNumber < 1) {
+        break;
+      }
+      if (letters.length - i <= hiddenNumber) {
         letters[i] = '-';
+        hiddenNumber--;
+        continue;
+      }
+      if (math.Random().nextDouble() * hiddenNumber < hiddenNumber * 0.8) {
+        letters[i] = '-';
+        hiddenNumber--;
       }
     }
-    // }
 
     return letters;
   }
@@ -68,7 +87,7 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   void _onInitial(BlankFillInitial event, Emitter<BlankFillState> emit) async {
     emit(state.copyWith(gameState: GameState.loading));
     String hiddenWord = await _createHiddenWord();
-    log('hidden word get');
+    developer.log('hidden word get');
     List<String> word = _wordHide(hiddenWord);
     emit(
       BlankFillState(
@@ -117,23 +136,28 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
     // check if win or not
     // log((!word.contains('-')).toString());
     if (!word.contains('-')) {
-      log('WIN');
+      developer.log('WIN');
+      print('WIN');
       // handle win
+      try {
+        _repository.save(
+          gameName: BlankFill.specification().gameName,
+          blankFill: BlankFill(
+            hiddenWord: hiddenWord,
+            guesses: guesses,
+            gameResult: GameState.win.string,
+            playedAt: DateTime.now(),
+            // timer: timer, // TODO implements timer
+            revealedLetterAmount: revealedLetterAmount,
+            length: length,
+            difficulty: difficulty,
+          ),
+        );
+      } on Exception catch (e) {
+        developer.log('Exception: $e');
+      }
       emit(state.copyWith(gameState: GameState.win));
-      _repository.save(
-        gameName: BlankFill.specification().gameName,
-        blankFill: BlankFill(
-          hiddenWord: hiddenWord,
-          guesses: guesses,
-          gameResult: state.gameState.toString(),
-          playedAt: DateTime.now(),
-          // timer: timer, // TODO implements timer
-          // revealedLetterAmount: revealedLetterAmount, // TODO implements Letter amount
-          length: length,
-          difficulty: difficulty,
-        ),
-      );
     }
-    inspect(state);
+    developer.inspect(state);
   }
 }

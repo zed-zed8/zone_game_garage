@@ -13,22 +13,39 @@ class GameScreen extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('BlankFill Game'),
-          SizedBox(height: 10),
-          Text('_ _ _ _ _'),
-          SizedBox(height: 10),
-          FilledButton(
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      GamingScreen(gameScreen: BlankFillScreen()),
-                ),
-                (Route<dynamic> route) => false,
-              );
-            },
-            child: Text('Play'),
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surfaceContainer,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'BlankFill Game',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  SizedBox(height: 10),
+                  Text('_ _ _ _ _'),
+                  SizedBox(height: 10),
+                  FilledButton(
+                    onPressed: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              GamingScreen(gameScreen: BlankFillScreen()),
+                        ),
+                        (Route<dynamic> route) => false,
+                      );
+                    },
+                    child: Text('Play'),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       ),

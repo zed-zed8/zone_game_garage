@@ -61,7 +61,9 @@ class RandomWordApi {
 
     // WRAP ONLY THIS SECTION IN A TRY/CATCH SAFETY NET
     try {
-      final response = await http.get(uri).timeout(const Duration(seconds: 10));
+      final response = await http
+          .get(uri)
+          .timeout(const Duration(seconds: 300));
 
       return response.body;
     } on SocketException catch (e) {

@@ -18,16 +18,12 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  late final bool isLogin;
+  late final Future<bool> isLogin;
 
   @override
   void initState() {
     super.initState();
-    log_in();
-  }
-
-  Future<void> log_in() async {
-    isLogin = await AuthStorage.isLoggedIn();
+    isLogin = AuthStorage.isLoggedIn();
   }
 
   @override
@@ -44,38 +40,56 @@ class _ProfileScreenState extends State<ProfileScreen> {
               width: 500,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    if (isLogin) ...[
-                      Text(
-                        'Settings',
-                        style: TextStyle(
-                          fontSize: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .fontSize,
-                        ),
-                      ),
-                      SizedBox(height: 10.0),
-                      ProfileBody(authCubit: newcontext.read<AuthCubit>()),
-                      SizedBox(height: 10.0),
-                      LogoutButton(authCubit: newcontext.read<AuthCubit>()),
-                    ] else ...[
-                      Text(
-                        'You are not logged in',
-                        style: TextStyle(
-                          fontSize: Theme.of(context)
-                              .textTheme
-                              .headlineSmall!
-                              .fontSize,
-                        ),
-                      ),
-                      SizedBox(height: 10.0),
-                      LoginButton(),
-                    ],
-                  ],
+                child: FutureBuilder(
+                  future: isLogin,
+                  builder: (context, asyncSnapshot) {
+                    if (asyncSnapshot.connectionState ==
+                        ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (asyncSnapshot.hasError) {
+                      return Center(
+                        child: Text('ERROR: ${asyncSnapshot.error}'),
+                      );
+                    }
+                    if (!asyncSnapshot.hasData) {
+                      return const Center(child: Text('No profile found'));
+                    }
+
+                    return Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (asyncSnapshot.data!) ...[
+                          Text(
+                            'Settings',
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .fontSize,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          ProfileBody(authCubit: newcontext.read<AuthCubit>()),
+                          SizedBox(height: 10.0),
+                          LogoutButton(authCubit: newcontext.read<AuthCubit>()),
+                        ] else ...[
+                          Text(
+                            'You are not logged in',
+                            style: TextStyle(
+                              fontSize: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall!
+                                  .fontSize,
+                            ),
+                          ),
+                          SizedBox(height: 10.0),
+                          LoginButton(),
+                        ],
+                      ],
+                    );
+                  },
                 ),
               ),
             ),

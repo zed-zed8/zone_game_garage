@@ -1,4 +1,12 @@
-enum GameState { running, win, lose, loading }
+enum GameState {
+  running('running'),
+  win('win'),
+  lose('lose'),
+  loading('loading');
+
+  GameState(this.string);
+  final String string;
+}
 
 class BlankFillState {
   final String hiddenWord;
