@@ -6,10 +6,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zone_game_garage/cubits/auth/auth_cubit.dart';
 import 'package:zone_game_garage/cubits/auth/auth_state.dart';
 
-import 'package:zone_game_garage/repositories/auth_repository.dart';
-import 'package:zone_game_garage/services/databases/app_database.dart';
-import 'package:zone_game_garage/services/databases/user_database.dart';
-
 import 'package:zone_game_garage/helpers/auth_helpers.dart';
 import 'package:zone_game_garage/screens/dashboard_screen.dart';
 import 'package:zone_game_garage/screens/auth/login_screen.dart';
