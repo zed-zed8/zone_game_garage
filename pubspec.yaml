@@ -1,7 +1,7 @@
 name: zone_game_garage
-description: "A new Flutter project."
+description: "my very own game hub"
 publish_to: 'none'
-version: 0.1.0+1
+version: 1.0.0+1
 
 environment:
   sdk: ^3.13.2
@@ -21,6 +21,16 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/images/app_icon.png"
+  windows:
+    generate: true
+    image_path: "assets/images/app_icon.png"
+    icon_size: 48 # min:48, max:256, default: 48

@@ -1,6 +1,6 @@
 # zone_game_garage
 
-A new Flutter project.
+My very own Game Hub
 
 
 ## file structure
