@@ -4,7 +4,10 @@ class FormInput extends StatelessWidget {
   final String label;
   final int maxLength;
   final String? Function(String?)? validator;
-  final FormFieldSetter<String>? onSaved;
+  final FormFieldSetter? onSaved;
+  final FormFieldSetter? onChanged;
+  final TextInputType? keyboardType;
+  final dynamic inputFormatters;
 
   const FormInput({
     super.key,
@@ -12,6 +15,9 @@ class FormInput extends StatelessWidget {
     this.maxLength = 255,
     this.validator,
     this.onSaved,
+    this.onChanged,
+    this.keyboardType,
+    this.inputFormatters,
   });
 
   @override
@@ -21,6 +27,9 @@ class FormInput extends StatelessWidget {
       decoration: InputDecoration(labelText: label, errorMaxLines: 3),
       validator: validator,
       onSaved: onSaved,
+      onChanged: onChanged,
+      keyboardType: keyboardType,
+      inputFormatters: inputFormatters,
     );
   }
 }

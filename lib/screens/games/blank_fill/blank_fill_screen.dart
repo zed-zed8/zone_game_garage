@@ -10,7 +10,17 @@ import 'package:zone_game_garage/blocs/games/blank_fill/blank_fill_state.dart';
 import 'package:zone_game_garage/screens/games/blank_fill/result_screen.dart';
 
 class BlankFillScreen extends StatefulWidget {
-  const BlankFillScreen({super.key});
+  const BlankFillScreen({
+    super.key,
+    required this._timerSecond,
+    required this._revealedLetterAmount,
+    required this._length,
+    required this._difficulty,
+  });
+  final int _timerSecond;
+  final int _revealedLetterAmount;
+  final int _length;
+  final int _difficulty;
 
   @override
   State<BlankFillScreen> createState() => _BlankFillScreenState();
@@ -23,7 +33,6 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _words = [];
   }
@@ -31,7 +40,12 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BlankFillBloc()..add(BlankFillInitial()),
+      create: (_) => BlankFillBloc(
+        timer: widget._timerSecond,
+        revealedLetterAmount: widget._revealedLetterAmount,
+        length: widget._length,
+        difficulty: widget._difficulty,
+      )..add(BlankFillInitial()),
       child: BlocBuilder<BlankFillBloc, BlankFillState>(
         builder: (context, state) {
           if (state.gameState == GameState.loading) {
@@ -51,18 +65,26 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
             print(state.hiddenWord);
             return Center(
               child: SizedBox(
-                width: 600,
+                width: 1000,
                 child: Form(
                   key: _formGlobalKey,
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child: Text('Timer ${widget._timerSecond}'),
+                        ),
+                      ),
+
                       // word
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Wrap(
                           spacing: 5.0,
+                          alignment: WrapAlignment.center,
                           children: [
                             for (final letter in state.word)
                               Tile(
@@ -142,12 +164,12 @@ class _TileState extends State<Tile> {
     );
 
     // 1. Dapatkan tinggi layar HP saat ini
-    final double screenHeight = MediaQuery.of(context).size.height;
+    final double _screenHeight = MediaQuery.of(context).size.height;
     // final double screenWidth = MediaQuery.of(context).size.width;
 
     // 2. Hitung padding vertikal responsif (contoh: 2% dari tinggi layar)
     // Berikan batas minimal (clamp) agar tidak terlalu tipis di HP jadul
-    final double responsivePadding = (screenHeight * 0.02).clamp(12.0, 20.0);
+    final double _responsivePadding = (_screenHeight * 0.02).clamp(12.0, 20.0);
 
     // 3. Hitung ukuran font responsif (contoh: 1.8% dari tinggi layar)
     // final double responsiveFontSize = (screenHeight * 0.018).clamp(14.0, 18.0);
@@ -175,8 +197,7 @@ class _TileState extends State<Tile> {
           // 4. Pasang padding responsif
           contentPadding: EdgeInsets.symmetric(
             horizontal: 20.0,
-            vertical:
-                responsivePadding, // 👈 Tinggi input akan menyesuaikan layar HP
+            vertical: _responsivePadding, // 👈 Tinggi input akan menyesuaikan layar HP
           ),
 
           // Border Normal & Fokus (Oranye Tebal)

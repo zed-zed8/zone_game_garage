@@ -13,7 +13,7 @@ import 'package:zone_game_garage/services/databases/app_database.dart';
 class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   // option :
   int? timer; // TODO implements timer
-  int? revealedLetterAmount; // TODO implements Letter amount
+  int? revealedLetterAmount;
   int? length;
   int? difficulty;
 
@@ -54,11 +54,12 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   List<String> _wordHide(String hiddenWord) {
     List<String> letters = hiddenWord.split('');
 
+    // get revealed letter amount and hidden letter amount
     int? revealedLetter = revealedLetterAmount;
-    int hiddenNumber; // amount of hidden letter
-    if (revealedLetter == null) {
+    int hiddenNumber;
+    if (revealedLetter == null || revealedLetter < 1) {
       hiddenNumber = math.Random().nextInt(letters.length);
-      if (hiddenNumber == 0) {
+      if (hiddenNumber < letters.length - 1) {
         hiddenNumber++;
       }
       revealedLetter = letters.length - hiddenNumber;
@@ -66,6 +67,7 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
       hiddenNumber = letters.length - revealedLetter;
     }
 
+    // algorithm for hiding letter
     for (var i = 0; i < letters.length; i++) {
       if (hiddenNumber < 1) {
         break;
@@ -86,9 +88,12 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
 
   void _onInitial(BlankFillInitial event, Emitter<BlankFillState> emit) async {
     emit(state.copyWith(gameState: GameState.loading));
+
     String hiddenWord = await _createHiddenWord();
     developer.log('hidden word get');
+
     List<String> word = _wordHide(hiddenWord);
+
     emit(
       BlankFillState(
         hiddenWord: hiddenWord,
