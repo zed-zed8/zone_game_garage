@@ -8,6 +8,7 @@ import 'package:zone_game_garage/blocs/games/blank_fill/blank_fill_bloc.dart';
 import 'package:zone_game_garage/blocs/games/blank_fill/blank_fill_event.dart';
 import 'package:zone_game_garage/blocs/games/blank_fill/blank_fill_state.dart';
 import 'package:zone_game_garage/screens/games/blank_fill/result_screen.dart';
+import 'package:zone_game_garage/widgets/timer/timer_widget.dart';
 
 class BlankFillScreen extends StatefulWidget {
   const BlankFillScreen({
@@ -59,6 +60,12 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
               hiddenWord: state.hiddenWord,
             );
           }
+          if (state.gameState == GameState.lose) {
+            return ResultScreen(
+              gameResult: 'lose',
+              hiddenWord: state.hiddenWord,
+            );
+          }
           if (state.gameState == GameState.running) {
             log('running app: ');
             inspect(state);
@@ -72,10 +79,15 @@ class _BlankFillScreenState extends State<BlankFillScreen> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      // timer
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child: Text('Timer ${widget._timerSecond}'),
+                        child: TimerWidget(
+                          durationSecond: widget._timerSecond,
+                          textStyle: Theme.of(context).textTheme.displayLarge,
+                          onTimerCompleted: () {
+                            context.read<BlankFillBloc>().add(BlankFillEnd());
+                          },
                         ),
                       ),
 

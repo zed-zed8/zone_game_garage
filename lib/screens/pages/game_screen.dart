@@ -220,6 +220,9 @@ class _BlankFillState extends State<BlankFill> {
                         if (_difficulty != 0 && _length == 0) {
                           _length = Random().nextInt(5) + 1;
                         }
+                        _length = _length == 1 ? 3 : _length;
+                        _length = _length == 2 ? 5 : _length;
+
                         Navigator.pushAndRemoveUntil(
                           context,
                           MaterialPageRoute(

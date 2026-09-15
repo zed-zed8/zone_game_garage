@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer' as developer;
 import 'dart:math' as math;
 
@@ -12,7 +13,7 @@ import 'package:zone_game_garage/services/databases/app_database.dart';
 
 class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
   // option :
-  int? timer; // TODO implements timer
+  int? timer;
   int? revealedLetterAmount;
   int? length;
   int? difficulty;
@@ -37,6 +38,7 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
        ) {
     on<BlankFillInitial>(_onInitial);
     on<BlankFillGuess>(_onGuessed);
+    on<BlankFillEnd>(_onLoss);
   }
 
   /// Returns the starting hidden word for a new round.
@@ -104,6 +106,40 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
     );
   }
 
+  void _end(
+    Emitter<BlankFillState> emit, {
+    required GameState gameState,
+    required String hiddenWord,
+    required List<String> guesses,
+  }) {
+    if (gameState == GameState.win) {
+      developer.log('WIN');
+      print('WIN');
+    } else if (gameState == GameState.lose) {
+      developer.log('lose');
+      print('lose');
+    }
+    // handle ending
+    try {
+      _repository.save(
+        gameName: BlankFill.specification().gameName,
+        blankFill: BlankFill(
+          hiddenWord: hiddenWord,
+          guesses: guesses,
+          gameResult: gameState.string,
+          playedAt: DateTime.now(),
+          timer: timer,
+          revealedLetterAmount: revealedLetterAmount,
+          length: length,
+          difficulty: difficulty,
+        ),
+      );
+    } on Exception catch (e) {
+      developer.log('Exception: $e');
+    }
+    emit(state.copyWith(gameState: gameState));
+  }
+
   void _onGuessed(BlankFillGuess event, Emitter<BlankFillState> emit) {
     final String hiddenWord = state.hiddenWord;
     final List<String> word = List.from(state.word);
@@ -114,7 +150,6 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
 
     List<String> inputLetters = guess.split('');
     List<String> hiddenLetters = hiddenWord.split('');
-
     // log('Are they equal: ${word.length}, ${guess.length}, ${inputLetters.length}, ${word.length == guess.length}');
     // log('Are they equal: ${word}, ${guess}, ${inputLetters}, ${word == guess}');
 
@@ -141,28 +176,25 @@ class BlankFillBloc extends Bloc<BlankFillEvent, BlankFillState> {
     // check if win or not
     // log((!word.contains('-')).toString());
     if (!word.contains('-')) {
-      developer.log('WIN');
-      print('WIN');
-      // handle win
-      try {
-        _repository.save(
-          gameName: BlankFill.specification().gameName,
-          blankFill: BlankFill(
-            hiddenWord: hiddenWord,
-            guesses: guesses,
-            gameResult: GameState.win.string,
-            playedAt: DateTime.now(),
-            // timer: timer, // TODO implements timer
-            revealedLetterAmount: revealedLetterAmount,
-            length: length,
-            difficulty: difficulty,
-          ),
-        );
-      } on Exception catch (e) {
-        developer.log('Exception: $e');
-      }
-      emit(state.copyWith(gameState: GameState.win));
+      _end(
+        emit,
+        gameState: GameState.win,
+        hiddenWord: hiddenWord,
+        guesses: guesses,
+      );
     }
     developer.inspect(state);
+  }
+
+  void _onLoss(BlankFillEnd event, Emitter<BlankFillState> emit) {
+    final String hiddenWord = state.hiddenWord;
+    final List<String> guesses = List.from(state.guesses);
+
+    _end(
+      emit,
+      gameState: GameState.lose,
+      hiddenWord: hiddenWord,
+      guesses: guesses,
+    );
   }
 }
